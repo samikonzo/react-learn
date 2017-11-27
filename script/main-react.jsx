@@ -1,8 +1,25 @@
-ReactDOM.render(
-	<div className="divy" style={{color: 'red', fontSize: '42px'}}>
-		<h1>Hello, world!</h1>
-	</div>
-	,
+var injection = {
+	name: 'Denis',
+}
 
-	document.querySelector('body')
-)
+class Timer extends React.Component{
+	render(){
+		return (
+			<div className="timer">
+				{(new Date()).toLocaleTimeString()}
+			</div>
+		);
+	}
+}
+
+function tick(){
+	ReactDOM.render(
+		<Timer/>,
+		document.querySelector('body')
+	)
+}
+
+setTimeout(function f(){
+	tick()
+	setTimeout(f, 1000)
+}, 0)
