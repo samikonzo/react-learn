@@ -50,7 +50,7 @@ var Item = function (_React$Component) {
 	}, {
 		key: 'render',
 		value: function render() {
-			l(this.props.name);
+			//l(this.props.name)
 			return React.createElement(
 				'li',
 				{ className: this.state.className, onClick: this.select, style: { cursor: "pointer", userSelect: "none" } },
@@ -64,48 +64,116 @@ var Item = function (_React$Component) {
 	return Item;
 }(React.Component);
 
-var listItems = ['Яблоко', 'Груша', 'Виноград', 'Апельсин', 'Киви'];
+var Search = function (_React$Component2) {
+	_inherits(Search, _React$Component2);
 
-var ItemList = function (_React$Component2) {
-	_inherits(ItemList, _React$Component2);
+	function Search(props) {
+		_classCallCheck(this, Search);
 
-	function ItemList(props) {
-		_classCallCheck(this, ItemList);
-
-		var _this2 = _possibleConstructorReturn(this, (ItemList.__proto__ || Object.getPrototypeOf(ItemList)).call(this, props));
-
-		_this2.state = {
-			items: _this2.props.data
-		};
+		var _this2 = _possibleConstructorReturn(this, (Search.__proto__ || Object.getPrototypeOf(Search)).call(this, props));
 
 		_this2.filterList = _this2.filterList.bind(_this2);
 		return _this2;
 	}
 
-	_createClass(ItemList, [{
+	_createClass(Search, [{
 		key: 'filterList',
 		value: function filterList(e) {
-			var value = e.target.value,
+			l('filterList');
+			var text = e.target.value.trim(),
+			    filterFunc = this.props.filterFunc,
+			    items = Object.keys(this.props.items()),
 			    filtredList = [];
 
-			if (value == '') {
-				l('empty string');
-				filtredList = this.props.data;
+			l(items);
+
+			if (text == '') {
+				filtredList = items;
 			} else {
-				this.props.data.forEach(function (item) {
-					if (item.toLowerCase().search(value.toLowerCase()) !== -1) {
-						var newItem = item.replace(new RegExp(value, "ig"), '<span class="match">$&</span>');
-						l(newItem);
+				items.forEach(function (item) {
+					if (item.toLowerCase().search(text.toLowerCase()) !== -1) {
+						var newItem = item.replace(new RegExp(text, "ig"), '<span class="match">$&</span>');
+						//newItem = item
 						filtredList.push(newItem);
 					}
 				});
 			}
 
-			l(filtredList);
+			l('here');
+			filterFunc(filtredList);
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			return React.createElement('input', { onInput: this.filterList });
+		}
+	}]);
 
+	return Search;
+}(React.Component);
+
+var listItems = ['Яблоко', 'Груша', 'Виноград', 'Апельсин', 'Киви'];
+
+var ItemList = function (_React$Component3) {
+	_inherits(ItemList, _React$Component3);
+
+	function ItemList(props) {
+		_classCallCheck(this, ItemList);
+
+		var _this3 = _possibleConstructorReturn(this, (ItemList.__proto__ || Object.getPrototypeOf(ItemList)).call(this, props));
+
+		var allItems = {};
+		_this3.props.data.forEach(function (item) {
+			return allItems[item] = true;
+		});
+
+		_this3.state = {
+			items: _this3.props.data,
+			allItems: allItems
+		};
+
+		_this3.filterList = _this3.filterList.bind(_this3);
+		_this3.addItem = _this3.addItem.bind(_this3);
+		_this3.getAllItems = _this3.getAllItems.bind(_this3);
+		return _this3;
+	}
+
+	_createClass(ItemList, [{
+		key: 'filterList',
+		value: function filterList(items) {
 			this.setState({
-				items: filtredList
+				items: items
 			});
+		}
+	}, {
+		key: 'addItem',
+		value: function addItem(e) {
+			var keyCode_enter = 13,
+			    keyCode_esc = 27;
+
+			if (e.keyCode == keyCode_enter) {
+				var newItem = e.target.value.trim(),
+				    items = this.state.items,
+				    allItems = this.state.allItems;
+
+				if (newItem == '') return;
+				items.push(newItem);
+
+				allItems[newItem] = true, this.setState({
+					items: items,
+					allItems: allItems
+				});
+
+				e.target.value = '';
+			} else if (e.keyCode == keyCode_esc) {
+				e.target.value = '';
+				e.target.blur();
+			} else {}
+		}
+	}, {
+		key: 'getAllItems',
+		value: function getAllItems() {
+			return this.state.allItems;
 		}
 	}, {
 		key: 'render',
@@ -113,7 +181,7 @@ var ItemList = function (_React$Component2) {
 			return React.createElement(
 				'div',
 				null,
-				React.createElement('input', { placeholder: 'Search', onInput: this.filterList }),
+				React.createElement(Search, { filterFunc: this.filterList, items: this.getAllItems }),
 				React.createElement(
 					'ul',
 					null,
@@ -126,7 +194,8 @@ var ItemList = function (_React$Component2) {
 					this.state.items.map(function (item) {
 						return React.createElement(Item, { key: item, name: item });
 					})
-				)
+				),
+				React.createElement('input', { onKeyDown: this.addItem })
 			);
 		}
 	}]);
