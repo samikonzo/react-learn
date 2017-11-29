@@ -79,27 +79,24 @@ var Search = function (_React$Component2) {
 	_createClass(Search, [{
 		key: 'filterList',
 		value: function filterList(e) {
-			l('filterList');
 			var text = e.target.value.trim(),
 			    filterFunc = this.props.filterFunc,
 			    items = Object.keys(this.props.items()),
 			    filtredList = [];
-
-			l(items);
 
 			if (text == '') {
 				filtredList = items;
 			} else {
 				items.forEach(function (item) {
 					if (item.toLowerCase().search(text.toLowerCase()) !== -1) {
-						var newItem = item.replace(new RegExp(text, "ig"), '<span class="match">$&</span>');
-						//newItem = item
+						//highlighter =(
+						//var newItem = item.replace(new RegExp(text,"ig"), '<span class="match">$&</span>');
+						var newItem = item;
 						filtredList.push(newItem);
 					}
 				});
 			}
 
-			l('here');
 			filterFunc(filtredList);
 		}
 	}, {
